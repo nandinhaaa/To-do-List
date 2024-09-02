@@ -1,17 +1,21 @@
 <?php
-
 require __DIR__ . '/connect.php';
-
 session_start();
 
-if (!isset($_SESSION['tasks'])) {
-    $_SESSION['tasks'] = array();
+// Verificação de login (permanece igual)
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+    exit();
 }
 
-$stmt = $conn->prepare("SELECT * FROM tasks");
-$stmt ->execute();
-$stmt->setFetchMode(PDO::FETCH_ASSOC);
+// Obter o ID do usuário logado da sessão (certifique-se que isso esteja definido após o login)
+$userId = $_SESSION['user_id']; 
 
+// Consultar apenas as tarefas do usuário logado
+$stmt = $conn->prepare("SELECT * FROM tasks WHERE user_id = :user_id");
+$stmt->bindParam(':user_id', $userId); 
+$stmt->execute();
+$stmt->setFetchMode(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -28,39 +32,37 @@ $stmt->setFetchMode(PDO::FETCH_ASSOC);
 <body>
 
 <div class="container">
-<?php
-    if(isset($_SESSION['sucess'])) {
-        ?>
-    <div class="alert-sucess"><?php echo $_SESSION['sucess'];?></div>
-    <?php 
-    unset($_SESSION['sucess']);
-    }
+    <?php
+        if(isset($_SESSION['success'])) {
+            ?>
+        <div class="alert-sucess"><?php echo $_SESSION['success'];?></div>
+        <?php 
+        unset($_SESSION['success']);
+        }
     ?>
 
-<?php
-    if(isset($_SESSION['error'])) {
-        ?>
-    <div class="alert-error"><?php echo $_SESSION['error'];?></div>
-    <?php 
-    unset($_SESSION['error']);
-    }
+    <?php
+        if(isset($_SESSION['error'])) {
+            ?>
+        <div class="alert-error"><?php echo $_SESSION['error'];?></div>
+        <?php 
+        unset($_SESSION['error']);
+        }
     ?>
-
-
 
     <div class="header">
         <h1>Gerenciador de Tarefas</h1>
     </div>
     <div class="form">
         <input type="hidden" name="insert" value="insert">
-        <form action="task.php" method="post" enctype="multipart/form-data" >
-            <label for="task_name"> Tarefa:</label>
+        <form action="task.php" method="post" enctype="multipart/form-data">
+            <label for="task_name">Tarefa:</label>
             <input type="text" name="task_name" placeholder="Nome da Tarefa">
             <label for="task_description">Descrição:</label>
             <input type="text" name="task_description" placeholder="Descrição da Tarefa">
-            <label for="task_date">Data</label>
+            <label for="task_date">Data:</label>
             <input type="date" name="task_date">
-            <label for="task_iamge">Imagem:</label>
+            <label for="task_image">Imagem:</label>
             <input type="file" name="task_image">
             <button type="submit">Cadastrar</button>
         </form>
@@ -74,29 +76,31 @@ $stmt->setFetchMode(PDO::FETCH_ASSOC);
     <div class="separator"></div>
     <div class="list-tasks">
         <?php
-  
             echo "<ul>";
             foreach ($stmt->fetchAll() as $task) {
                 echo "<li>
                         <a href='details.php?key=" . $task['id'] . "'>" . $task['task_name'] . "</a>
+                        <a href='edit.php?key=" . $task['id'] . "' class='btn-edit'>Editar</a>
                         <button type='button' class='bnt-clear' onclick='deletar(" . $task['id'] . ")'>Remover</button>
                       </li>";
             }
-            
             echo "</ul>";
-            ?>
-            
-            <script>
-                function deletar(id) {
-                    if (confirm("Confirmar remoção?")) {
-                        window.location.href = 'task.php?key=' + id;
-                    }
+        ?>
+        <script>
+            function deletar(id) {
+                if (confirm("Confirmar remoção?")) {
+                    window.location.href = 'task.php?key=' + id;
                 }
-            </script>
-            
-    
-      
+            }
+        </script>
     </div>
+    
+    <div class="form">
+        <form action="logout.php" method="post">
+            <button type="submit">Retornar ao Login</button>
+        </form>
+    </div>
+    
     <div class="footer">
         <p>Desenvolvido por @Nanda e @Amanda</p>
     </div>
