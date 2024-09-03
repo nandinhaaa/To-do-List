@@ -8,7 +8,9 @@
 </head>
 <body>
 
-<div class="container">
+<div class="login">
+    
+    <div class="container">
     <div class="header">
         <h1>Login</h1>
     </div>
@@ -19,10 +21,16 @@
             <label for="password">Senha:</label>
             <input type="password" name="password" required>
             <button type="submit" name="action" value="login">Login</button>
+            
         </form>
-        <a class="link-aut" href="register.php">Cadastre-se</a> <!-- Link para a página de cadastro -->
+        <div class="cdt">
+            <p class="text">ou</p>
+            <a class="link-aut" href="register.php">Crie sua conta</button> <!-- Link para a página de cadastro -->
+        </div>
     </div>
 </div>
+</div>
+
 
 </body>
 </html>
