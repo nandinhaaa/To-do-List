@@ -30,7 +30,9 @@ if (isset($_SESSION['username'])) {
             <input type="password" name="password" required>
             <button type="submit" name="action" value="register">Cadastrar</button>
         </form>
-        <p><a class="link-aut" href="login.php">Já tem uma conta? Faça login</a></p> <!-- Link para a página de login -->
+        <div class="cdt">
+            <a class="link-aut" href="login.php">Já tem uma conta? Faça login</a> <!-- Link para a página de login -->
+        </div>
     </div>
 </div>
 
